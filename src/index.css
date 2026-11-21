@@ -1,0 +1,124 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ---------- Navy + purple theme (light by default; dark follows device or Theme button) ---------- */
+:root {
+  --bg: #f6f5ff; --surf: #ffffff; --ink: #141a3d; --mute: #575e8a;
+  --acc: #6d3fe0; --btn: #5b2fd0; --line: #dcd8f5; --hd: rgba(246, 245, 255, 0.8);
+  --b1: #8b5cf6; --b2: #3b5bdb; --b3: #c084fc; --bo: 0.28; --spot: rgba(109, 63, 224, 0.12);
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0a1028; --surf: #121a3f; --ink: #e8eafb; --mute: #9aa2cf;
+    --acc: #b199ff; --btn: #7a49e6; --line: #262f63; --hd: rgba(10, 16, 40, 0.8);
+    --b1: #7c3aed; --b2: #1d4ed8; --b3: #a855f7; --bo: 0.4; --spot: rgba(177, 153, 255, 0.14);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0a1028; --surf: #121a3f; --ink: #e8eafb; --mute: #9aa2cf;
+  --acc: #b199ff; --btn: #7a49e6; --line: #262f63; --hd: rgba(10, 16, 40, 0.8);
+  --b1: #7c3aed; --b2: #1d4ed8; --b3: #a855f7; --bo: 0.4; --spot: rgba(177, 153, 255, 0.14);
+  color-scheme: dark;
+}
+
+html { scroll-behavior: smooth; }
+body { @apply bg-bg text-ink font-body m-0; overflow-x: hidden; }
+h1, h2, h3 { @apply font-display; }
+a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visible { outline: 2px solid var(--acc); outline-offset: 3px; }
+
+/* ---------- Background: drifting aurora, dot grid, cursor spotlight, scroll progress ---------- */
+.aurora { position: fixed; inset: 0; overflow: hidden; z-index: 0; pointer-events: none; }
+.aurora i { position: absolute; border-radius: 50%; filter: blur(90px); opacity: var(--bo); }
+.aurora i:nth-child(1) { width: 48vmax; height: 48vmax; top: -14vmax; left: -12vmax; background: var(--b1); animation: drift1 22s ease-in-out infinite alternate; }
+.aurora i:nth-child(2) { width: 42vmax; height: 42vmax; bottom: -16vmax; right: -10vmax; background: var(--b2); animation: drift2 26s ease-in-out infinite alternate; }
+.aurora i:nth-child(3) { width: 30vmax; height: 30vmax; top: 35%; left: 45%; background: var(--b3); animation: drift3 30s ease-in-out infinite alternate; }
+.aurora::after { content: ""; position: absolute; inset: 0; background-image: radial-gradient(var(--line) 1px, transparent 1px); background-size: 30px 30px;
+  -webkit-mask-image: radial-gradient(ellipse at 50% 30%, #000 20%, transparent 75%); mask-image: radial-gradient(ellipse at 50% 30%, #000 20%, transparent 75%); opacity: 0.7; }
+.spot { position: fixed; inset: 0; z-index: 1; pointer-events: none; background: radial-gradient(520px circle at var(--mx, 50%) var(--my, 25%), var(--spot), transparent 65%); }
+.progress { position: fixed; top: 0; left: 0; right: 0; height: 3px; z-index: 50; transform: scaleX(0); transform-origin: left;
+  background: linear-gradient(90deg, var(--btn), #60a5fa, var(--acc)); }
+@keyframes drift1 { to { transform: translate(14vmax, 10vmax) scale(1.15); } }
+@keyframes drift2 { to { transform: translate(-16vmax, -8vmax) scale(1.2); } }
+@keyframes drift3 { to { transform: translate(-12vmax, 12vmax) scale(0.8); } }
+
+/* ---------- Page transition ---------- */
+.page-in { animation: pageIn 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) backwards; }
+@keyframes pageIn { from { opacity: 0; transform: translateY(18px); filter: blur(6px); } }
+
+/* ---------- Scroll reveal (variants: up, left, right, zoom) ---------- */
+.reveal { opacity: 0; transform: translateY(28px);
+  transition: opacity 0.9s cubic-bezier(0.2, 0.7, 0.2, 1), transform 0.9s cubic-bezier(0.2, 0.7, 0.2, 1); }
+.reveal.left { transform: translateX(-44px); }
+.reveal.right { transform: translateX(44px); }
+.reveal.zoom { transform: scale(0.86); }
+.reveal.in { opacity: 1; transform: none; }
+.reveal .bar { display: block; height: 4px; width: 72px; margin-top: 14px; border-radius: 4px; background: linear-gradient(90deg, var(--btn), #60a5fa);
+  transform: scaleX(0); transform-origin: left; transition: transform 0.9s 0.35s cubic-bezier(0.2, 0.7, 0.2, 1); }
+.reveal.in .bar { transform: scaleX(1); }
+
+/* ---------- Hero: letter-by-letter name, gradient role text, caret ---------- */
+.letter { display: inline-block; opacity: 0; animation: letter 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+@keyframes letter { from { opacity: 0; transform: translateY(46px) rotate(8deg); } to { opacity: 1; transform: none; } }
+.grad { background: linear-gradient(90deg, var(--acc), #60a5fa, var(--acc)); background-size: 200% 100%;
+  -webkit-background-clip: text; background-clip: text; color: transparent; animation: shine 5s linear infinite; }
+@keyframes shine { to { background-position: -200% 0; } }
+.caret { display: inline-block; width: 3px; height: 1em; margin-left: 4px; vertical-align: -0.12em; background: var(--acc); animation: blink 1s steps(1) infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+
+/* ---------- Profile photo: spinning gradient ring, float, orbiting badges ---------- */
+.ring { position: relative; overflow: hidden; padding: 5px; border-radius: 999px 999px 32px 32px; }
+.ring::before { content: ""; position: absolute; inset: -60%; background: conic-gradient(from 0deg, #8b5cf6, #1e3a8a, #c4b5fd, #4c1d95, #60a5fa, #8b5cf6); animation: spin 7s linear infinite; }
+.ring > div { position: relative; border-radius: 995px 995px 28px 28px; overflow: hidden; background: var(--bg); padding: 6px; }
+.ring img { border-radius: 990px 990px 24px 24px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.float { animation: float 6s ease-in-out infinite; }
+@keyframes float { 50% { transform: translateY(-12px); } }
+.bob { animation: bob 4.5s ease-in-out infinite; }
+@keyframes bob { 50% { transform: translateY(-9px) rotate(-2deg); } }
+
+/* ---------- Buttons ---------- */
+.btn-shine { position: relative; overflow: hidden; }
+.btn-shine::after { content: ""; position: absolute; inset: 0; transform: translateX(-130%);
+  background: linear-gradient(110deg, transparent 30%, rgba(255, 255, 255, 0.4) 50%, transparent 70%); }
+.btn-shine:hover::after { transform: translateX(130%); transition: transform 0.8s ease; }
+
+/* ---------- 3D tilt cards with moving glare ---------- */
+.tilt { position: relative; transition: transform 0.25s ease; will-change: transform; }
+.tilt::after { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; opacity: 0; transition: opacity 0.3s;
+  background: radial-gradient(280px circle at var(--gx, 50%) var(--gy, 50%), rgba(139, 92, 246, 0.2), transparent 70%); }
+.tilt:hover::after { opacity: 1; }
+.card-top { height: 3px; margin: -24px -24px 20px; border-radius: 16px 16px 0 0; background: linear-gradient(90deg, var(--acc), transparent);
+  transform: scaleX(0.15); transform-origin: left; transition: transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1); }
+.tilt:hover .card-top { transform: scaleX(1); }
+
+/* ---------- Skill chips pop in; marquee rows ---------- */
+.pop { opacity: 0; transform: scale(0.7); }
+.reveal.in .pop { animation: pop 0.55s cubic-bezier(0.3, 1.6, 0.5, 1) forwards; animation-delay: var(--d, 0ms); }
+@keyframes pop { to { opacity: 1; transform: none; } }
+.mq { overflow: hidden; -webkit-mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent); mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent); }
+.marquee { display: flex; gap: 0.75rem; width: max-content; animation: marq 34s linear infinite; }
+.marquee.rev { animation-direction: reverse; animation-duration: 40s; }
+.mq:hover .marquee { animation-play-state: paused; }
+@keyframes marq { to { transform: translateX(-50%); } }
+
+/* ---------- Timeline: line draws itself, dots pulse ---------- */
+.tl-line { position: absolute; left: 6px; top: 8px; bottom: 8px; width: 2px; background: linear-gradient(var(--acc), transparent);
+  transform: scaleY(0); transform-origin: top; transition: transform 1.8s cubic-bezier(0.4, 0, 0.2, 1); }
+.tl-line.on { transform: scaleY(1); }
+.dot { position: absolute; left: -32px; top: 9px; width: 14px; height: 14px; border-radius: 50%; background: var(--acc); }
+.dot::after { content: ""; position: absolute; inset: 0; border-radius: 50%; background: var(--acc); animation: ping 2.4s ease-out infinite; }
+@keyframes ping { from { transform: scale(1); opacity: 0.55; } to { transform: scale(3); opacity: 0; } }
+
+.arch { border-radius: 999px 999px 28px 28px; }
+
+/* ---------- Respect "reduce motion" ---------- */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .reveal, .reveal.left, .reveal.right, .reveal.zoom, .pop, .letter { opacity: 1; transform: none; transition: none; animation: none; }
+  .reveal .bar, .tl-line { transform: none; transition: none; }
+  .page-in, .grad, .caret, .float, .bob, .ring::before, .dot::after, .aurora i { animation: none; }
+  .marquee { animation: none; flex-wrap: wrap; width: auto; }
+}
